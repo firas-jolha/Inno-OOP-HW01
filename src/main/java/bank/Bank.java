@@ -2,8 +2,8 @@ package bank;
 
 import bank.accounts.Account;
 import bank.clients.Client;
+import bank.utils.ErrorMessages;
 import bank.utils.amount.Amount;
-import bank.utils.amount.DoubleAmount;
 import bank.utils.Utils;
 
 import java.util.ArrayList;
@@ -11,18 +11,18 @@ import java.util.List;
 import java.util.UUID;
 
 public class Bank {
-    private String name;
+    private String name = "Bank-"+ UUID.randomUUID().toString();
     private List<Client> clients = new ArrayList<>();
     private List<Account> accounts = new ArrayList<>();
-    private Amount totalMoney;
+    private Amount totalMoney = Amount.getAmountInstance(0.0);
 
-    public Bank() {
-        this("Bank-"+ UUID.randomUUID().toString(), Amount.getAmountInstance(0.0));
-    }
+    public Bank(){}
 
     public Bank(String name, Amount totalAmount) {
-        this.name = name;
-        this.totalMoney = totalAmount;
+        if (Utils.notNull(name, totalAmount)) {
+            this.name = name;
+            this.totalMoney = totalAmount;
+        }
     }
 
     public Amount getTotalMoney() {
@@ -40,27 +40,87 @@ public class Bank {
 
     public boolean updateTotalMoneyField(){
         Number total = 0.0;
-        for (Account account: accounts){
-            total = account.getBalance().sum(total);
-        }
-        return true;
-    }
-
-    public boolean addClient(Client client) {
-        if (Utils.notNull(client)) {
-            for (int i = 0; i < client.getAccountsSize(); i++) {
-                this.accounts.add(client.getAccountByIndex(i));
+        try{
+            for (Account account: accounts){
+                total = account.getBalance().sum(total);
             }
-            return clients.add(client);
+            this.totalMoney = Amount.getAmountInstance(total);
+            return true;
+        }catch(Exception ex){
+            return false;
         }
-        return false;
     }
 
-    public boolean addAccount(Account account){
-        if (Utils.notNull(account))
-            return this.accounts.add(account);
-        return false;
+    public boolean update(){
+        return updateTotalMoneyField();
     }
+
+    /**
+     * Adds a new client to the list of clients,
+     *
+     * @param client the new client
+     * @return status of adding a new client
+     */
+    public boolean addClient(Client client) {
+        boolean status = true; // will track the status of success of operation
+        // checks if new client is existed in system
+        // duplicate clients is forbidden
+        if (clients.contains(client)) {
+            System.out.println(ErrorMessages.CLIENT_EXIST_IN_SYSTEM);
+            return false;
+        }
+        // checks if new client is existed
+        if (Utils.notNull(client)) {
+            // add the new client to the list of clients
+            status &= clients.add(client);
+            // Iterates through the accounts of client to add them
+            // to list of accounts in the bank
+            for (int i = 0; i < client.getAccountsSize(); i++) {
+                // Calls the addAccount method in class Client
+                // getAccountByIndex method will return the account according the passed param
+                status &= this.addAccount(client.getAccountByIndex(i)); //, this.clients.lastIndexOf(client)
+            }
+            status &= update(); // update all fields in bank like totalMoneyField
+            return status;
+        } else{
+            System.out.println(ErrorMessages.NOT_EXISTED_CLIENT);
+            return false;
+        }
+    }
+
+    /**
+     * Adds the new account the list of accounts
+     * @param account
+     * @return
+     */
+    public boolean addAccount(Account account) {
+        try {
+//            Client client = clients.get(clientIndex);
+            Client client = null;
+            if (Utils.notNull(account)) client = account.getClient();
+            else {
+                System.out.println(ErrorMessages.NOT_EXISTED_ACCOUNT);
+                return false;
+            }
+            if(accounts.contains(account)){ // client.accountExists(account) ||
+                System.out.println(ErrorMessages.RESERVED_ACCOUNT);
+                return false;
+            }else{
+                this.accounts.add(account);
+                return true;
+            }
+        }catch (IndexOutOfBoundsException ex){
+            System.out.println(ErrorMessages.NOT_EXISTED_CLIENT);
+            return false;
+        }
+    }
+//
+//
+//    public boolean addAccount(Account account){
+//        if (Utils.notNull(account))
+//            return this.accounts.add(account);
+//        return false;
+//    }
 
     public String listClients() {
         String out = "";

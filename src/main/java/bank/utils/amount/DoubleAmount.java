@@ -14,10 +14,6 @@ public class DoubleAmount extends Amount {
     public Number sum(Number a) {
         return a.doubleValue() + this.getAmountValue().doubleValue();
     }
-//
-//    public static Number sum(Number a, Number b) {
-//        return a.doubleValue() + b.doubleValue();
-//    }
 
     public Number sub(Number a) {
         return this.getAmountValue().doubleValue() - a.doubleValue();

@@ -67,10 +67,17 @@ public abstract class Client {
     }
 
     public boolean addAccount(Account account){
-        if (account == null) return false;
-        accounts.add(account);
-        updateAccountsSizeField();
-        return updateTotalMoneyField();
+        if (account == null) {
+            System.out.println(ErrorMessages.NOT_EXISTED_ACCOUNT);
+            return false;
+        }
+
+        // checks if the account owner is the client who will hold the account
+//        if (account.getClient() == (this))
+            accounts.add(account);
+//        else System.out.println(ErrorMessages.NOT_VALID_ACCOUNT_CLIENT);
+//            account.setClient(this);            // setClient only used here!
+        return update();
     }
 
     public boolean deleteAccount(int index){
@@ -80,8 +87,7 @@ public abstract class Client {
         }
         try {
             accounts.remove(index);
-            updateAccountsSizeField();
-            return updateTotalMoneyField();
+            return update();
         }catch (IndexOutOfBoundsException ex){
             System.out.println(ErrorMessages.NOT_EXISTED_ACCOUNT);
             return false;
@@ -95,18 +101,15 @@ public abstract class Client {
     public boolean accountExists(IAccount account){
         return accounts.contains((Account) account);
     }
-//
-//    public ArrayList<Account> getAccounts() {
-//        return accounts;
-//    }
 
     public int getAccountsSize() {
         updateAccountsSizeField();
         return accountsSize;
     }
 
-    private void updateAccountsSizeField(){
-        accountsSize = accounts.size();
+    private boolean updateAccountsSizeField(){
+        this.accountsSize = accounts.size();
+        return true;
     }
 
     private boolean updateTotalMoneyField(){
@@ -119,9 +122,14 @@ public abstract class Client {
             this.totalMoney = Amount.getAmountInstance(total);
             return true;
         }catch (Exception ex){
+            System.out.println(ErrorMessages.UNDEFINABLE_ERROR);
             return false;
         }
 
+    }
+
+    public boolean update(){
+        return updateAccountsSizeField() && updateTotalMoneyField();
     }
 
     public Amount getTotalMoney() {

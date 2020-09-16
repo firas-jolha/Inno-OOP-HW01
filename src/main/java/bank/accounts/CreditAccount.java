@@ -5,8 +5,8 @@ import bank.utils.amount.Amount;
 
 public class CreditAccount extends Account {
 
-    public CreditAccount(Amount amount) {
-        super(amount);
+    public CreditAccount(Client client, Amount amount) {
+        super(client, amount);
     }
 //
 //    public CreditAccount(Client client) {
