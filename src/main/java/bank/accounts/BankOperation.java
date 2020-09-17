@@ -43,7 +43,7 @@ public class BankOperation {
     @Override
     public String toString() {
         String out = "";
-        out += "\nBankOperation{" +
+        out += "BankOperation{" +
                 " operationType = " + operationType+" ";
         switch (operationType){
             case DEPOSIT:
@@ -57,7 +57,7 @@ public class BankOperation {
                 break;
             default:
         }
-        out += ", amount="+amount+"}";
+        out += ", amount="+amount+"}\n";
         return out;
     }
 }

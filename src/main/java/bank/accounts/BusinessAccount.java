@@ -44,7 +44,7 @@ public class BusinessAccount extends Account {
         } else if (getClient() instanceof VIPClient) {
             fees = 0.0; // doesn't change default value
         }
-        amount.setAmountValue(amount.sub(amount.mul(fees)));
+        amount.setAmountValue(amount.sub(amount.getAmountValue().doubleValue()*(fees))); // we need to ensure that fees is not 0, so we convert it always into double
         return super.transfer(account2, amount);// Performs the transfer operation after calculating the fees
     }
 

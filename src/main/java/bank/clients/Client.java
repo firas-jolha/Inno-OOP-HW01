@@ -193,14 +193,14 @@ public abstract class Client {
 
     @Override
     public String toString() {
-        return "Client{" +
-                "name='" + getName() + '\'' +
-                ", BirthDate=" + getBirthDate() +
-                ", gender=" + getGender() +
-                ", accounts=" + this.accounts +
-                ", totalMoney=" + getTotalMoney() +
-                ", accountsSize=" + getAccountsSize() +
-                '}';
+        return "==========================================\n" +
+                "Client :\n" +
+                "name='" + getName() + '\'' + ",\n" +
+                "BirthDate=" + getBirthDate() + ",\n" +
+                "gender=" + getGender() + ",\n" +
+                this.getAccountsSize()+ " accounts=\n" + this.accounts + ",\n" +
+                "totalMoney=" + getTotalMoney() + ",\n" +
+                "accountsSize=" + getAccountsSize() ;
     }
 
 }

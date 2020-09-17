@@ -57,9 +57,7 @@ public class SavingAccount extends Account {
 
     @Override
     public String toString() {
-        return "SavingAccount{" +
-                super.toString()+
-                ", savingDate=" + getSavingDate() +
-                '}';
+        return super.toString()+
+                "savingDate=" + getSavingDate()+"\n";
     }
 }

@@ -216,10 +216,9 @@ public abstract class Account implements IAccount {
      */
     @Override
     public String toString() {
-        return "\nAccount{\n" +
+        return this.getClass().getSimpleName()+" :\n" +
                 "id=" + Id +
                 ", balance=" + balance +
-                ",\n"+operations.size()+" operations : \n" + operations+"\n" +
-                "}\n";
+                ",\n"+operations.size()+" operations : \n" + operations+"\n";
     }
 }

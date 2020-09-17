@@ -159,12 +159,12 @@ public class Bank {
     public static String listAccounts(List<Account> accounts) {
         StringBuilder out = new StringBuilder("\n");
         if (accounts.size() == 0) {
-            out.append("We don't have any accounts\n");
+            out.append("We don't have any accounts in the Bank\n");
         } else {
-            out.append(String.format("We have %d account(s)\n", accounts.size()));
+            out.append(String.format("We have %d account(s) in the Bank\n", accounts.size()));
         }
-        for (Account account : accounts) {
-            out.append(account.toString()).append("\n");
+        for (int i = 0; i < accounts.size(); i++) {
+            out.append("(").append(i).append(")").append(accounts.get(i).toString()).append("\n");
         }
         return out.toString();
     }
