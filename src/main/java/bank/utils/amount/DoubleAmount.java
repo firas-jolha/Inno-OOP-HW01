@@ -1,16 +1,16 @@
 package bank.utils.amount;
 
+/**
+ * Represents Amount objects of value type Double
+ * A subclass of Amount
+ */
 public class DoubleAmount extends Amount {
 
     public DoubleAmount(Number a) {
         super(a);
     }
 
-    public void setAmountValue(Number amount) {
-        if (amount.doubleValue() < 0.0) amount = 0.0;
-        super.setAmountValue(amount);
-    }
-
+    //Other methods are just implementations of abstract methods in Amount class
     public Number sum(Number a) {
         return a.doubleValue() + this.getAmountValue().doubleValue();
     }
@@ -38,5 +38,8 @@ public class DoubleAmount extends Amount {
         return (this.getAmountValue().doubleValue() == amount.getAmountValue().doubleValue());
     }
 
-
+    @Override
+    public boolean isNegative() {
+        return this.getAmountValue().doubleValue() < 0.0;
+    }
 }

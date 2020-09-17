@@ -14,7 +14,7 @@ import java.util.UUID;
 /**
  * The {@code Account} is the base class of all {@code Account}
  * classes. It's an abstract class, because we cannot create an
- * account without specifying the type of account.<br> It implements
+ * account without specifying the type of account. It implements
  * {@code IAccount} interface which preserves that every account
  * should support three operations {@code deposit}, {@code withdraw}
  * and {@code transfer} operations
@@ -31,12 +31,18 @@ public abstract class Account implements IAccount {
      */
     private Client client;
 
-    private ArrayList<BankOperation> operations = new ArrayList<>();
+    /**
+     * list of operations applied on the account (history of account operations)
+     */
+    private final ArrayList<BankOperation> operations = new ArrayList<>();
 
+    /**
+     * An automatically-generated unique Id for each account
+     */
     private final String Id = "Account-"+ UUID.randomUUID().toString();
 
     /**
-     * <b>Constructor</b> with 2 parameters.
+     * <b>Constructor</b> with 2 parameters (the client and amount).
      *
      * If the {@code client} is {@code null}, a new {@code RegularClient}
      * will be created with default attribute values.
@@ -45,25 +51,18 @@ public abstract class Account implements IAccount {
      * @param amount the initial amount of money in the account
      */
     public Account(Client client, Amount amount) {
+        // Check if client is existed
         if(client != null) this.client = client;
-        else {
+        else { // not existed client, so create a typical client
             System.out.println(ErrorMessages.NOT_EXISTED_CLIENT);
             this.client = new RegularClient();
         }
-        setBalance(amount);
-        this.client.addAccount(this);
-    }
-
-    /**
-     * <b>Constructor</b> with 1 parameter.
-     *
-     * This constructor will call the generic constructor with 2 parameters but
-     * the default value for balance will be 0.0
-     *
-     * @param client the owner of the account
-     */
-    public Account(Client client) {
-        this(client, Amount.getAmountInstance(0.0));
+        setBalance(amount); // sets the new balance
+        if (!this.client.addAccount(this)) {// adds the current account to the list of accounts of the client
+            // This ensures that every account created should have an owner
+            // This prevents random assigning of accounts to clients
+            System.out.println(ErrorMessages.UNDEFINABLE_ERROR);
+        }
     }
 
     /**
@@ -72,11 +71,23 @@ public abstract class Account implements IAccount {
      * @param balance the new balance
      */
     public void setBalance(Amount balance) {
-        if (Utils.notNull(balance))
+        if (Utils.notNull(balance) && balanceCondition(balance))
             this.balance = balance;
         else System.out.println(ErrorMessages.NOT_VALID_AMOUNT);
     }
 
+    /**
+     * Defines the condition applied on balance parameter
+     * @param balance the new balance
+     * @return the condition on balance
+     */
+    public abstract boolean balanceCondition(Amount balance);
+
+    /**
+     * Gets the Id of account
+     *
+     * @return Id of account
+     */
     public String getId() {
         return Id;
     }
@@ -130,9 +141,10 @@ public abstract class Account implements IAccount {
         Amount changedAmount = Amount.getAmountInstance(this.balance.sum(amount.getAmountValue()));
 
         setBalance(changedAmount); // Sets the new balance of the account
-        operations.add(new BankOperation(BankOperationType.DEPOSIT,this, amount));
+        operations.add(new BankOperation(BankOperationType.DEPOSIT,this, amount)); // adds the deposit operation to list of operations
         return true; // Successful deposit operation
     }
+
     /**
      * Subtracts the specified amount from the balance of the account.
      * If the amount is null, then the balance won't be affected.
@@ -141,7 +153,6 @@ public abstract class Account implements IAccount {
      * @return true for successful withdraw, otherwise false
      */
     public boolean withdraw(Amount amount) {
-
         // if the withdrawal amount is not existed or less than the balance
         // we refuse the withdraw operation
         if (!Utils.notNull(amount, this.balance) ||
@@ -175,9 +186,27 @@ public abstract class Account implements IAccount {
         // this will first withdraw then deposit to the another account
         if (this.withdraw(amount) && account.deposit(amount)){// Successful/Unsuccessful transfer operation
             operations.add(new BankOperation(BankOperationType.TRANSFER,this, (Account) account, amount));
-            return true;
+            try {
+                // removes the last withdrawal operation
+                this.operations.remove(operations.size()-2);
+                Account acc = (Account) account;
+                // removes the last deposit operation
+                acc.operations.remove(acc.operations.size()-1);
+                return true;
+            }catch (Exception ex){
+                System.out.println(ErrorMessages.NOT_PERMITTED_OPERATION);
+                return false;
+            }
         }else return false;
+    }
 
+
+    /**
+     * Returns all operations as a String
+     * @return string of operations' info
+     */
+    public String listOperations(){
+        return operations.toString();
     }
 
     /**
@@ -187,10 +216,10 @@ public abstract class Account implements IAccount {
      */
     @Override
     public String toString() {
-        return "Account{" +
+        return "\nAccount{\n" +
                 "id=" + Id +
                 ", balance=" + balance +
-                ","+operations.size()+" operations = " + operations +
-                '}';
+                ",\n"+operations.size()+" operations : \n" + operations+"\n" +
+                "}\n";
     }
 }

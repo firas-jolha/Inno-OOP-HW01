@@ -9,6 +9,7 @@ public class RegularClient extends Client {
         super(name, birthDate, gender);
     }
 
+    // I need this constructor for creating default client
     public RegularClient() {
     }
 }

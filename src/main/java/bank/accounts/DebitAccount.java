@@ -7,4 +7,12 @@ public class DebitAccount extends Account {
     public DebitAccount(Client client, Amount amount) {
         super(client, amount);
     }
+
+    // Ensures that balance >= 0
+    @Override
+    public boolean balanceCondition(Amount balance) {
+        return !balance.isNegative();
+    }
+
+
 }
